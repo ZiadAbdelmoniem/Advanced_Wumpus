@@ -1,7 +1,10 @@
 public class State {
     public int c;
+    public int m;
+    public int n;
     public int cgX;
     public int cgY;
+
     public int currentx;
     public int currenty;
     public int [][] ships;
@@ -15,8 +18,8 @@ public class State {
         String[] arrOfStr = grid.split(";", -1);
         //initializing the size of the grid
         String []mxn=arrOfStr[0].split(",",-1);
-        int m=Integer.parseInt(mxn[0]);
-        int n=Integer.parseInt(mxn[1]);
+        m=Integer.parseInt(mxn[0]);
+        n=Integer.parseInt(mxn[1]);
         //initializing the maximum number of people on the guard ship
         this.c=Integer.parseInt(arrOfStr[1]);
         //initializing the initial position of the guard ship
@@ -43,6 +46,7 @@ public class State {
         String[] shipX=arrOfStr[4].split(",",-1);
         int noOfShips=(shipX.length)/2;
         this.ships=new int[noOfShips][3];
+        this.blackbox=new int[noOfShips][3];
         loop=0;
         for(int i=0;i< shipX.length;i+=3){
             int X=Integer.parseInt(shipX[i]);
@@ -51,6 +55,9 @@ public class State {
             ships[loop][0]=X;
             ships[loop][1]=Y;
             ships[loop][2]=Passenger;
+            blackbox[loop][0]=X;
+            blackbox[loop][1]=Y;
+            blackbox[loop][2]=0;
             loop++;
         }
         
@@ -58,22 +65,6 @@ public class State {
 
     }
 
-    public static boolean up(){
-
-        return true;
-    }
-    public static boolean down(){
-        return true;
-    }
-    public static boolean left(){
-        return true;
-    }
-    public static boolean retrieve(){
-        return true;
-    }
-    public static boolean drop(){
-        return true;
-    }
    public static void main(String[] args) {
         State m=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
 
