@@ -69,7 +69,7 @@ public class CoastGuard {
 
         //grid=GenGrid()
         //Solve(grid,"bf",true)
-        System.out.print(GenGrid());
+        //System.out.print(GenGrid());
 
     }
 }
