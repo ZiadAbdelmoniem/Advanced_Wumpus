@@ -1,6 +1,6 @@
 public class Node {
 
-    public int [] state;
+    public State state;
     public Node parent;
     public String operator;
     public int depth;
