@@ -49,7 +49,7 @@ public class State {
 
         //initializing the ships positions
         String[] shipX=arrOfStr[4].split(",",-1);
-        int noOfShips=(shipX.length)/2;
+        int noOfShips=(shipX.length)/3;
         this.ships=new int[noOfShips][3];
         this.blackbox=new int[noOfShips][3];
         loop=0;
@@ -65,9 +65,33 @@ public class State {
             blackbox[loop][2]=0;
             loop++;
         }
-        
 
+    }
 
+    public boolean isGoalState(){
+
+        //check for every ship
+
+        //check if there are any passengers on any ship
+        for (int i = 0; i < this.ships.length-1; i++) {
+            if(this.ships[i][2]>0){
+                return false;
+            }
+        }
+
+        //check if there are any blackboxes on any ship
+        for (int i = 0; i < this.blackbox.length-1; i++) {
+            if(this.ships[i][2]<20){
+                return false;
+            }
+        }
+
+        //check if the coast guard ship has any passengers
+        if(this.capacity>0){
+            return false;
+        }
+
+        return true;
     }
 
     @Override
