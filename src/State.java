@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class State {
     public int c;
     public int m;
@@ -68,7 +70,27 @@ public class State {
 
     }
 
-   public static void main(String[] args) {
+    @Override
+    public String toString() {
+        return "State{" +
+                "c=" + c +
+                ", m=" + m +
+                ", n=" + n +
+                ", cgX=" + cgX +
+                ", cgY=" + cgY +
+                ", currentx=" + currentx +
+                ", currenty=" + currenty +
+                ", ships=" + Arrays.deepToString(ships) +
+                ", stations=" + Arrays.deepToString(stations) +
+                ", blackbox=" + Arrays.deepToString(blackbox) +
+                ", capacity=" + capacity +
+                ", saved=" + saved +
+                ", dead=" + dead +
+                ", pickedUp=" + pickedUp +
+                '}';
+    }
+
+    public static void main(String[] args) {
         State m=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
 
     }

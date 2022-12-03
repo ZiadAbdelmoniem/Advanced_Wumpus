@@ -1,5 +1,8 @@
+import java.util.HashSet;
+
 public class CoastGuard {
 
+    static HashSet<String> existingStates = new HashSet<String>();
     public static String GenGrid(){
         //Double.POSITIVE_INFINITY
 
@@ -64,6 +67,14 @@ public class CoastGuard {
 
     public static void Solve(String grid, String strategy, boolean visual){}
 
+    public static boolean isDuplicate(State state){
+        String stateString = state.toString();
+        if (existingStates.contains(stateString))
+            return true;
+
+        existingStates.add(stateString);
+        return false;
+    }
 
     public static void main (String []args){
 
@@ -71,5 +82,11 @@ public class CoastGuard {
         //Solve(grid,"bf",true)
         //System.out.print(GenGrid());
 
+//        State m=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
+//        existingStates.add(m.toString());
+//        State n=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
+//
+//        System.out.println(isDuplicate(m));
+//        System.out.println(existingStates);
     }
 }
