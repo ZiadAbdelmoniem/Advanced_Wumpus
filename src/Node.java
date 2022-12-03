@@ -1,13 +1,13 @@
 public class Node {
 
-    public static State state;
+    public State state;
     public Node parent;
     public String operator;
     public int depth;
     public int path_cost;
 
     public Node(State s, Node parent, String operator, int depth, int path_cost){
-        state=s;
+        this.state=s;
         this.parent=parent;
         this.operator=operator;
         this.depth=depth;
@@ -15,8 +15,11 @@ public class Node {
 
     }
 
-    public static State up(){
-        State newState = state;
+
+
+    public State up(){
+        State newState = new State();
+        newState.copy(state);
         if(newState.currenty!=newState.m-1){
             newState.currenty++;
             newState=death(newState);
@@ -27,8 +30,9 @@ public class Node {
         }
 
     }
-    public static State down(){
-        State newState = state;
+    public State down(){
+        State newState = new State();
+        newState.copy(state);
         if(newState.currenty!=0){
             newState.currenty--;
             newState=death(newState);
@@ -39,8 +43,9 @@ public class Node {
         }
 
     }
-    public static State right(){
-        State newState = state;
+    public State right(){
+        State newState = new State();
+        newState.copy(state);
         if(newState.currentx!= newState.n-1){
             newState.currentx++;
             newState=death(newState);
@@ -51,8 +56,9 @@ public class Node {
         }
 
     }
-    public static State left(){
-        State newState = state;
+    public State left(){
+        State newState = new State();
+        newState.copy(state);
         if(newState.currentx!= 0){
             newState.currentx--;
             newState=death(newState);
@@ -63,8 +69,9 @@ public class Node {
         }
 
     }
-    public static State pickUp(){
-        State newState = state;
+    public  State pickUp(){
+        State newState = new State();
+        newState.copy(state);
         if(newState.capacity< newState.c){
             boolean shipExists=false;
             for (int[]ship:newState.ships ) {
@@ -100,8 +107,9 @@ public class Node {
         }
 
     }
-    public static State retrieve(){
-        State newState = state;
+    public State retrieve(){
+        State newState = new State();
+        newState.copy(state);
         boolean shipExists=false;
         for (int[]ship:newState.ships ) {
             if (ship[0] == newState.currentx && ship[1] == newState.currenty && ship[2] == 0) {//ship is in out position and has passengers
@@ -123,8 +131,9 @@ public class Node {
             return newState;
 
     }
-    public static State drop(){
-        State newState = state;
+    public State drop(){
+        State newState = new State();
+        newState.copy(state);
         if(newState.capacity>0){
             boolean stationExists=false;
             for (int[]station: newState.stations
@@ -165,25 +174,19 @@ public class Node {
 
     public static void main(String[] args) {
         State m=new State("5,6;50;1,1;0,4,3,3;1,1,50;");
-
-        Node non=new Node(m,null,"",0,0);
-        State newState=non.pickUp();
-
-        Node new2=new Node(newState,null,"",0,0);
-        newState=new2.right();
-        Node new3=new Node(newState,null,"",0,0);
-        newState=new3.left();
-         new2=new Node(newState,null,"",0,0);
-        Node no1=new Node(m,null,"",0,0);
-        newState=no1.retrieve();
+        Node trial=new Node(m,null,null,0,0);
+        State newState=trial.up();
+        Node trial2=new Node(newState,null,null,0,0);
+        State newState1=trial2.up();
 
 
-        System.out.println(newState.dead);
-        System.out.println(newState.currentx);
-        System.out.println(newState.currenty);
-        System.out.println(newState.blackbox[0][2]);
-        System.out.println(newState.ships[0][2]);
-        System.out.println(newState.capacity);
-        System.out.println(newState.pickedUp);
+
+        System.out.println(newState1.dead);
+        System.out.println(newState1.currentx);
+        System.out.println(newState1.currenty);
+        System.out.println(newState1.blackbox[0][2]);
+        System.out.println(newState1.ships[0][2]);
+        System.out.println(newState1.capacity);
+        System.out.println(newState1.pickedUp);
     }
 }

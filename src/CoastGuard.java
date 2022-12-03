@@ -1,4 +1,9 @@
+
 import java.util.HashSet;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
 
 public class CoastGuard {
 
@@ -65,7 +70,87 @@ public class CoastGuard {
         return res;
     }
 
-    public static void Solve(String grid, String strategy, boolean visual){}
+    public static String Solve(String grid, String strategy, boolean visual){
+        State firstState=new State(grid);
+        Node firstNode=new Node(firstState,null,"",0,0);
+        Queue<Node> nodes = new LinkedList<>();//queue for bfc
+        int nodesNumber = 0;
+        switch (strategy) {
+            case "BF":
+                nodes.add(firstNode);
+                while(!nodes.isEmpty()){
+                    Node node=nodes.remove();
+                    if(node.state.isGoalState()){//Goal test
+                        String s=node.operator+","+node.state.dead+","+node.state.pickedUp+","+nodesNumber;
+                        s=s.substring(1);
+                        return s;
+
+                    }
+                    else{
+                        State checkState=node.right();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
+                            if(!isDuplicate(node.state)) {
+
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+                        checkState=node.left();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
+                            if(!isDuplicate(addNode.state)) {
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+                        checkState=node.up();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
+                            if(!isDuplicate(addNode.state)) {
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+                        checkState=node.down();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
+                            if(!isDuplicate(addNode.state)) {
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+                        checkState=node.retrieve();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
+                            if(!isDuplicate(addNode.state)) {
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+                        checkState=node.drop();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
+                            if(!isDuplicate(addNode.state)) {
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+                        checkState=node.pickUp();
+                        if(checkState!=null){
+                            Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
+                            if(!isDuplicate(addNode.state)) {
+                                nodes.add(addNode);
+                                nodesNumber++;
+                            }
+                        }
+
+                    }
+                }
+
+        }
+        return "no solution";
+    }
 
     public static boolean isDuplicate(State state){
         String stateString = state.toString();
@@ -78,15 +163,11 @@ public class CoastGuard {
 
     public static void main (String []args){
 
-        //grid=GenGrid()
-        //Solve(grid,"bf",true)
-        //System.out.print(GenGrid());
 
-//        State m=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
-//        existingStates.add(m.toString());
-//        State n=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
-//
-//        System.out.println(isDuplicate(m));
-//        System.out.println(existingStates);
+        String grid="5,6;50;0,1;0,4,3,3;1,1,90;";
+        String s=Solve(grid,"BF",true);
+        System.out.println(s);
+
+
     }
 }

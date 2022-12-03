@@ -16,6 +16,9 @@ public class State {
     public int saved=0;
     public int dead=0;
     public int pickedUp=0;
+    public State(){
+
+    }
     public State(String grid){
         //M, N ; C; cgX, cgY ;
         //I1X, I1Y, I2X, I2Y, ...IiX, IiY ;
@@ -73,15 +76,15 @@ public class State {
         //check for every ship
 
         //check if there are any passengers on any ship
-        for (int i = 0; i < this.ships.length-1; i++) {
+        for (int i = 0; i < this.ships.length; i++) {
             if(this.ships[i][2]>0){
                 return false;
             }
         }
 
         //check if there are any blackboxes on any ship
-        for (int i = 0; i < this.blackbox.length-1; i++) {
-            if(this.ships[i][2]<20){
+        for (int i = 0; i < this.blackbox.length; i++) {
+            if(this.blackbox[i][2]<21){
                 return false;
             }
         }
@@ -93,6 +96,7 @@ public class State {
 
         return true;
     }
+
 
     @Override
     public String toString() {
@@ -114,8 +118,38 @@ public class State {
                 '}';
     }
 
-    public static void main(String[] args) {
-        State m=new State("5,6;50;0,1;0,4,3,3;1,1,90;");
+
+    public static int[][] deepCopy(int[][] original) {
+        if (original == null) {
+            return null;
+        }
+
+        final int[][] result = new int[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            result[i] = Arrays.copyOf(original[i], original[i].length);
+        }
+        return result;
+    }
+    public void copy(State s){
+        this.c = s.c;
+        this.m = s.m;
+        this.n = s.n;
+        this.cgX = s.cgX;
+        this.currentx = s.currentx;
+        this.currenty = s.currenty;
+        this.ships = deepCopy(s.ships);
+        this.stations = deepCopy(s.stations);
+        this.blackbox = deepCopy(s.blackbox);
+        this.capacity = s.capacity;
+        this.saved = s.saved;
+        this.dead = s.dead;
+        this.pickedUp = s.pickedUp;
+    }
+
+   public static void main(String[] args) {
+       State m=new State("5,6;50;1,1;0,4,3,3;1,1,50;");
+
+
 
     }
 
