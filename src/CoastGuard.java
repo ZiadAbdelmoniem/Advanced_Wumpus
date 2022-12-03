@@ -62,7 +62,7 @@ public class CoastGuard {
         return res;
     }
 
-    public static void Solve(String grid, String stratgy, boolean visual){}
+    public static void Solve(String grid, String strategy, boolean visual){}
 
 
     public static void main (String []args){
