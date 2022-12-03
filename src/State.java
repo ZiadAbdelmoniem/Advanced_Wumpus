@@ -10,7 +10,9 @@ public class State {
     public int [][] ships;
     public int [][] stations;
     public int [][] blackbox;
+    public int capacity=0;
     public int dead=0;
+    public int pickedUp=0;
     public State(String grid){
         //M, N ; C; cgX, cgY ;
         //I1X, I1Y, I2X, I2Y, ...IiX, IiY ;
