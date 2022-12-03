@@ -74,10 +74,12 @@ public class Node {
                     if(carriageSpace<ship[2]){
                     ship[2]-=carriageSpace;
                     newState.capacity=newState.c;
+                    newState.saved+= carriageSpace;
                 }
                     else{
                         newState.capacity+=ship[2];
                         ship[2]=0;
+                        newState.saved+= ship[2];
                         for (int[]blackbox: newState.blackbox
                              ) {if(blackbox[0]==ship[0] &&blackbox[1]==ship[1]){
                                  blackbox[2]=1;
@@ -107,6 +109,7 @@ public class Node {
                      ) {
                     if(blackbox[0]==ship[0] &&blackbox[1]==ship[1] && blackbox[2]<21){
                         shipExists = true;
+                        blackbox[2]=22;
                         newState.pickedUp++;
                     }
                 }

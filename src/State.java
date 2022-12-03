@@ -11,6 +11,7 @@ public class State {
     public int [][] stations;
     public int [][] blackbox;
     public int capacity=0;
+    public int saved=0;
     public int dead=0;
     public int pickedUp=0;
     public State(String grid){
