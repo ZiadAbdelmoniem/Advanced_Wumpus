@@ -101,23 +101,9 @@ public class State {
 
 
     @Override
-    public String toString() {
-        return "code.State{" +
-                "c=" + c +
-                ", m=" + m +
-                ", n=" + n +
-                ", cgX=" + cgX +
-                ", cgY=" + cgY +
-                ", currentx=" + currentx +
-                ", currenty=" + currenty +
-                ", ships=" + Arrays.deepToString(ships) +
-                ", stations=" + Arrays.deepToString(stations) +
-                ", blackbox=" + Arrays.deepToString(blackbox) +
-                ", capacity=" + capacity +
-                ", saved=" + saved +
-                ", dead=" + dead +
-                ", pickedUp=" + pickedUp +
-                '}';
+    public String toString(){
+        return ""+currentx+""+currenty+""+Arrays.deepToString(ships)+""+Arrays.deepToString(blackbox)+""+capacity+
+                ""+saved+""+dead+""+pickedUp;
     }
 
 

@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 
 public class CoastGuard {
@@ -70,85 +71,180 @@ public class CoastGuard {
 
         return res;
     }
-
-    public static String solve(String grid, String strategy, boolean visual){
+    public static String BFS(String grid){
+        int nodesNumber = 0;
         State firstState=new State(grid);
         Node firstNode=new Node(firstState,null,"",0,0);
         Queue<Node> nodes = new LinkedList<>();//queue for bfc
-        int nodesNumber = 0;
-        switch (strategy) {
-            case "BF":
-                nodes.add(firstNode);
-                while(!nodes.isEmpty()){
-                    Node node=nodes.remove();
-                    if(node.state.isGoalState()){//Goal test
-                        String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
-                        s=s.substring(1);
-                        return s;
+        nodes.add(firstNode);
+        while(!nodes.isEmpty()){
+            Node node=nodes.remove();
+            if(node.state.isGoalState()){//Goal test
+                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                s=s.substring(1);
+                return s;
 
+            }
+            else{
+                State checkState=node.pickUp();
+                String[] LastNode=node.operator.split(",",-1);
+                String lastOperator=LastNode[LastNode.length-1];
+
+                if(checkState!=null ){
+                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.add(addNode);
+                        nodesNumber++;
                     }
-                    else{
-                        State checkState=node.right();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
-                            if(!isDuplicate(node.state)) {
+                }
+                checkState=node.drop();
+                if(checkState!=null){
+                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.retrieve();
+                if(checkState!=null){
+                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.right();
+                if(checkState!=null && !lastOperator.equals("left")){
+                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
 
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-                        checkState=node.left();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
-                            if(!isDuplicate(addNode.state)) {
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-                        checkState=node.up();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
-                            if(!isDuplicate(addNode.state)) {
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-                        checkState=node.down();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
-                            if(!isDuplicate(addNode.state)) {
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-                        checkState=node.retrieve();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
-                            if(!isDuplicate(addNode.state)) {
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-                        checkState=node.drop();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
-                            if(!isDuplicate(addNode.state)) {
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-                        checkState=node.pickUp();
-                        if(checkState!=null){
-                            Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
-                            if(!isDuplicate(addNode.state)) {
-                                nodes.add(addNode);
-                                nodesNumber++;
-                            }
-                        }
-
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.left();
+                if(checkState!=null&& !lastOperator.equals("right")){
+                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.up();
+                if(checkState!=null&& !lastOperator.equals("down")){
+                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.down();
+                if(checkState!=null&& !lastOperator.equals("up")){
+                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.add(addNode);
+                        nodesNumber++;
                     }
                 }
 
+
+
+            }
+        }
+        return "no solution";
+    }
+    public static String DFS(String grid){
+        int nodesNumber = 0;
+        State firstState=new State(grid);
+        Node firstNode=new Node(firstState,null,"",0,0);
+        Stack<Node> nodes = new Stack<Node>(); // A stack used by IDS and DFS
+        nodes.push(firstNode);
+        while(!nodes.isEmpty()){
+            Node node=nodes.pop();
+            if(node.state.isGoalState()){//Goal test
+                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                s=s.substring(1);
+                return s;
+
+            }
+            else{
+                State checkState=node.pickUp();
+                String[] LastNode=node.operator.split(",",-1);
+                String lastOperator=LastNode[LastNode.length-1];
+
+                if(checkState!=null ){
+                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.drop();
+                if(checkState!=null){
+                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.retrieve();
+                if(checkState!=null){
+                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.right();
+                if(checkState!=null && !lastOperator.equals("left")){
+                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.left();
+                if(checkState!=null&& !lastOperator.equals("right")){
+                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.up();
+                if(checkState!=null&& !lastOperator.equals("down")){
+                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.down();
+                if(checkState!=null&& !lastOperator.equals("up")){
+                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
+                    if(!isDuplicate(addNode.state)) {
+                        nodes.push(addNode);
+                        nodesNumber++;
+                    }
+                }
+
+
+
+            }
+        }
+        return "no solution";
+    }
+
+    public static String solve(String grid, String strategy, boolean visual){
+
+
+
+        switch (strategy) {
+            case "BF":
+                return BFS(grid);
+            case "DF":
+                return DFS(grid);
         }
         return "no solution";
     }
@@ -165,10 +261,11 @@ public class CoastGuard {
     public static void main (String []args){
 
 
-        String grid= "6,7;82;1,4;2,3;1,1,58,3,0,58,4,2,72;";
+        String grid= "6,6;52;2,0;2,4,4,0,5,4;2,1,19,4,2,6,5,0,8;";
         String s=solve(grid,"BF",true);
         //"5,6;50;0,1;0,4,3,3;1,1,90;"
         System.out.println(s);
+
 
 
     }
