@@ -82,6 +82,7 @@ public class CoastGuard {
             if(node.state.isGoalState()){//Goal test
                 String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
                 s=s.substring(1);
+                existingStates = new HashSet<String>();
                 return s;
 
             }
@@ -164,6 +165,7 @@ public class CoastGuard {
             if(node.state.isGoalState()){//Goal test
                 String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
                 s=s.substring(1);
+                existingStates = new HashSet<String>();
                 return s;
 
             }
@@ -246,6 +248,7 @@ public class CoastGuard {
             case "DF":
                 return DFS(grid);
         }
+        existingStates = new HashSet<String>();
         return "no solution";
     }
 
