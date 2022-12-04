@@ -82,7 +82,7 @@ public class CoastGuard {
                 while(!nodes.isEmpty()){
                     Node node=nodes.remove();
                     if(node.state.isGoalState()){//Goal test
-                        String s=node.operator+","+node.state.dead+","+node.state.pickedUp+","+nodesNumber;
+                        String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
                         s=s.substring(1);
                         return s;
 
@@ -150,7 +150,7 @@ public class CoastGuard {
                 }
 
         }
-        return "The output actions do not lead to a goal state.";
+        return "no solution";
     }
 
     public static boolean isDuplicate(State state){
@@ -165,8 +165,9 @@ public class CoastGuard {
     public static void main (String []args){
 
 
-        String grid= "5,6;50;0,1;0,4,3,3;1,1,90;";
+        String grid= "6,7;82;1,4;2,3;1,1,58,3,0,58,4,2,72;";
         String s=solve(grid,"BF",true);
+        //"5,6;50;0,1;0,4,3,3;1,1,90;"
         System.out.println(s);
 
 

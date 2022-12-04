@@ -15,7 +15,7 @@ import code.CoastGuard;
 
 public class CoastGuardPublic {
 	
-	String grid0 = "5,6;50;0,1;0,4,3,3;1,1,90;";
+	String grid0 = "5,6;50;1,1;0,4,3,3;1,1,50;";
 	String grid1 = "6,6;52;2,0;2,4,4,0,5,4;2,1,19,4,2,6,5,0,8;";
 	String grid2 = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
 	String grid3 = "8,5;60;4,6;2,7;3,4,37,3,5,93,4,0,40;";
@@ -28,7 +28,7 @@ public class CoastGuardPublic {
 	String grid10= "10,6;59;1,7;0,0,2,2,3,0,5,3;1,3,69,3,4,80,4,7,94,4,9,14,5,2,39;";
 
 
-	@Test(timeout = 10000)
+	@Test
 	public void testa0() throws Exception {
 		String solution = CoastGuard.solve(grid0, "BF", false);
 		solution = solution.replace(" ", "");

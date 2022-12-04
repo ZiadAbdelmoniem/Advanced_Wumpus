@@ -19,7 +19,7 @@ public class Node {
 
 
 
-    public State up(){
+    public State right(){
         State newState = new State();
         newState.copy(state);
         if(newState.currenty!=newState.m-1){
@@ -32,7 +32,7 @@ public class Node {
         }
 
     }
-    public State down(){
+    public State left(){
         State newState = new State();
         newState.copy(state);
         if(newState.currenty!=0){
@@ -45,7 +45,7 @@ public class Node {
         }
 
     }
-    public State right(){
+    public State down(){
         State newState = new State();
         newState.copy(state);
         if(newState.currentx!= newState.n-1){
@@ -58,7 +58,7 @@ public class Node {
         }
 
     }
-    public State left(){
+    public State up(){
         State newState = new State();
         newState.copy(state);
         if(newState.currentx!= 0){
