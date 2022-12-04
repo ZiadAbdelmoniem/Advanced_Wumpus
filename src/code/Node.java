@@ -1,3 +1,5 @@
+package code;
+
 public class Node {
 
     public State state;
@@ -69,7 +71,7 @@ public class Node {
         }
 
     }
-    public  State pickUp(){
+    public State pickUp(){
         State newState = new State();
         newState.copy(state);
         if(newState.capacity< newState.c){

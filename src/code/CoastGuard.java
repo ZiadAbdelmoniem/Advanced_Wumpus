@@ -1,3 +1,4 @@
+package code;
 
 import java.util.HashSet;
 
@@ -70,7 +71,7 @@ public class CoastGuard {
         return res;
     }
 
-    public static String Solve(String grid, String strategy, boolean visual){
+    public static String solve(String grid, String strategy, boolean visual){
         State firstState=new State(grid);
         Node firstNode=new Node(firstState,null,"",0,0);
         Queue<Node> nodes = new LinkedList<>();//queue for bfc
@@ -149,7 +150,7 @@ public class CoastGuard {
                 }
 
         }
-        return "no solution";
+        return "The output actions do not lead to a goal state.";
     }
 
     public static boolean isDuplicate(State state){
@@ -164,8 +165,8 @@ public class CoastGuard {
     public static void main (String []args){
 
 
-        String grid="5,6;50;0,1;0,4,3,3;1,1,90;";
-        String s=Solve(grid,"BF",true);
+        String grid= "5,6;50;0,1;0,4,3,3;1,1,90;";
+        String s=solve(grid,"BF",true);
         System.out.println(s);
 
 

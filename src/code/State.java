@@ -1,3 +1,5 @@
+package code;
+
 import java.util.Arrays;
 
 public class State {
@@ -100,7 +102,7 @@ public class State {
 
     @Override
     public String toString() {
-        return "State{" +
+        return "code.State{" +
                 "c=" + c +
                 ", m=" + m +
                 ", n=" + n +
