@@ -237,6 +237,94 @@ public class CoastGuard {
         }
         return "no solution";
     }
+    public static String ID(String grid){
+        int nodesNumber = 0;
+        int maxDepth=0;
+        while(true) {
+            State firstState=new State(grid);
+            Node firstNode=new Node(firstState,null,"",0,0);
+            Stack<Node> nodes = new Stack<Node>(); // A stack used by IDS and DFS
+            nodes.push(firstNode);
+            existingStates = new HashSet<String>();
+            while (!nodes.isEmpty()) {
+                Node node = nodes.pop();
+                if (node.state.isGoalState()) {//Goal test
+                    String s = node.operator + ";" + node.state.dead + ";" + node.state.pickedUp + ";" + nodesNumber;
+                    s = s.substring(1);
+                    existingStates = new HashSet<String>();
+                    return s;
+
+                } else {
+                    int childDepth = node.depth + 1;
+                    if (childDepth <= maxDepth) {
+                    State checkState = node.pickUp();
+                    String[] LastNode = node.operator.split(",", -1);
+                    String lastOperator = LastNode[LastNode.length - 1];
+
+                    if (checkState != null) {
+                        Node addNode = new Node(checkState, node, node.operator + ",pickup", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+                    checkState = node.drop();
+                    if (checkState != null) {
+                        Node addNode = new Node(checkState, node, node.operator + ",drop", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+                    checkState = node.retrieve();
+                    if (checkState != null) {
+                        Node addNode = new Node(checkState, node, node.operator + ",retrieve", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+                    checkState = node.right();
+                    if (checkState != null && !lastOperator.equals("left")) {
+                        Node addNode = new Node(checkState, node, node.operator + ",right", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+                    checkState = node.left();
+                    if (checkState != null && !lastOperator.equals("right")) {
+                        Node addNode = new Node(checkState, node, node.operator + ",left", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+                    checkState = node.up();
+                    if (checkState != null && !lastOperator.equals("down")) {
+                        Node addNode = new Node(checkState, node, node.operator + ",up", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+                    checkState = node.down();
+                    if (checkState != null && !lastOperator.equals("up")) {
+                        Node addNode = new Node(checkState, node, node.operator + ",down", node.depth + 1, 0);
+                        if (!isDuplicate(addNode.state)) {
+                            nodes.push(addNode);
+                            nodesNumber++;
+                        }
+                    }
+
+
+                }
+            }
+            }
+            maxDepth++;
+        }
+    }
 
     public static String solve(String grid, String strategy, boolean visual){
 
@@ -247,6 +335,8 @@ public class CoastGuard {
                 return BFS(grid);
             case "DF":
                 return DFS(grid);
+            case "ID":
+                return ID(grid);
         }
         existingStates = new HashSet<String>();
         return "no solution";
