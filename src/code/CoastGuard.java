@@ -10,14 +10,14 @@ import java.util.Stack;
 public class CoastGuard {
 
     static HashSet<String> existingStates = new HashSet<String>();
-    public static String GenGrid(){
+    public static String genGrid(){
         //Double.POSITIVE_INFINITY
 
         String res="";
         String stations="";
         String ships="";
-        int M=(int) ((Math.random() * (20 - 5)) + 5);
-        int N=(int) ((Math.random() * (15 - 1)) + 1);
+        int M=(int) ((Math.random() * (15 - 5)) + 5);
+        int N=(int) ((Math.random() * (15 - 5)) + 5);
         int C=(int) ((Math.random() * (100 - 30)) + 30);
         int cgX=(int) ((Math.random() * (M - 1)) + 1);
         int cgY=(int) ((Math.random() * (N - 1)) + 1);
