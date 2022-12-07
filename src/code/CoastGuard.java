@@ -634,7 +634,7 @@ public class CoastGuard {
 
         String grid= "5,6;50;0,1;0,4,3,3;1,1,90;";
        // String s1=solve(grid,"AS2",true);
-        String s2=solve(grid,"AS2",false);
+        String s2=solve(grid,"AS2",true);
         //"5,6;50;0,1;0,4,3,3;1,1,90;"
         //System.out.println(s1);
         System.out.println(s2);
