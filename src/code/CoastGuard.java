@@ -418,7 +418,6 @@ public class CoastGuard {
         return "no solution";
     }
     public static String ID(String grid){
-        int nodesNumber = 0;
         int maxDepth=0;
         while(true) {
             State firstState=new State(grid);
@@ -427,6 +426,7 @@ public class CoastGuard {
             nodes.push(firstNode);
             existingStates = new HashSet<String>();
             while (!nodes.isEmpty()) {
+                int nodesNumber = 0;
                 Node node = nodes.pop();
                 if (node.state.isGoalState()) {//Goal test
                     String s = node.operator + ";" + node.state.dead + ";" + node.state.pickedUp + ";" + nodesNumber;
