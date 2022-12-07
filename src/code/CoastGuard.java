@@ -198,6 +198,7 @@ public class CoastGuard {
                     }
                 }
                 checkState=node.retrieve();
+                int BoxesLeft=0;
                 if(checkState!=null){
                     Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
@@ -543,7 +544,7 @@ public class CoastGuard {
 
 
         String grid= "8,5;60;4,6;2,7;3,4,37,3,5,93,4,0,40;";
-        String s1=solve(grid,"AS1",true);
+        String s1=solve(grid,"AS2",true);
         String s2=solve(grid,"BF",true);
         //"5,6;50;0,1;0,4,3,3;1,1,90;"
         System.out.println(s1);

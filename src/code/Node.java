@@ -57,9 +57,15 @@ public class Node {
                     blackBoxesNotRetrieved++;
                 }
             }
+            if(passengersOnShips==0){
+                this.heuristic_cost =blackBoxesNotRetrieved+passengersOnGuardShip;
 
-            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip+blackBoxesNotRetrieved;
-        }
+            }
+            else{
+                this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip;
+
+            }
+             }
     }
 
     public State right(){
