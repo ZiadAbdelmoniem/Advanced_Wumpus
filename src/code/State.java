@@ -80,7 +80,7 @@ public class State {
 
     public void print2d(){
         String [][]curr_Grid=new String[this.n][this.m];
-        curr_Grid[this.currentx][this.currentx]="CoastGuard/"+this.capacity+"/"+this.pickedUp;
+
 
         for (int i = 0; i < stations.length; i++) {
             int x=stations[i][0];
@@ -92,10 +92,35 @@ public class State {
             int x=ships[i][0];
             int y=ships[i][1];
             int p=ships[i][2];
-            curr_Grid[x][y]="Ship/"+p;
+            if(p>0) {
+                curr_Grid[x][y] = "Ship/" + p;
+            }
+            else{
+                for (int[] box:this.blackbox
+                     ) {
+                    if(box[0]==ships[i][0] && box[1]==ships[i][1] ){
+                        if(box[2]>20){
+                            curr_Grid[x][y] = "BlackBox Gone" ;
+                        }
+                        else{
+                            int ShowHealth=box[2]-1;
+                            curr_Grid[x][y] = "BlackBox/" + ShowHealth ;
+                        }
+                    }
+
+                }
+            }
+        }
+        if(curr_Grid[this.currentx][this.currenty]==null){
+            curr_Grid[this.currentx][this.currenty]="CoastGuard/"+this.capacity+"/"+this.pickedUp;
+
+        }
+        else{
+            curr_Grid[this.currentx][this.currenty]= curr_Grid[this.currentx][this.currenty]+" "+"CoastGuard/"+this.capacity+"/"+this.pickedUp;
+
         }
 
-        System.out.println("Saved: "+this.saved);
+        System.out.println("Dead: "+this.dead);
         print2D(curr_Grid);
 
     }

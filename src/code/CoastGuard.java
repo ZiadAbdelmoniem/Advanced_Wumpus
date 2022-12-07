@@ -632,13 +632,13 @@ public class CoastGuard {
     public static void main (String []args){
 
 
-        String grid= "8,5;60;4,6;2,7;3,4,37,3,5,93,4,0,40;";
+        String grid= "5,6;50;0,1;0,4,3,3;1,1,90;";
        // String s1=solve(grid,"AS2",true);
-        String s2=solve(grid,"BF",false);
+        String s2=solve(grid,"AS2",false);
         //"5,6;50;0,1;0,4,3,3;1,1,90;"
         //System.out.println(s1);
         System.out.println(s2);
-        visualize(grid,s2);
+
 
 
 
