@@ -159,6 +159,97 @@ public class CoastGuard {
         }
         return "no solution";
     }
+    public static String AStar(String grid, int heuristicNumber){
+        int nodesNumber = 0;
+        State firstState=new State(grid);
+        Node firstNode=new Node(firstState,null,"",0,0);
+        //note: correctly estimating initial capacity in priority queue decreases memory and time needed
+        //maybe we can estimate according to grid size
+        PriorityQueue<Node> nodes = new PriorityQueue<Node>(20, new NodeAStarComparator());
+        nodes.add(firstNode);
+        while(!nodes.isEmpty()){
+            Node node = nodes.remove();
+            if(node.state.isGoalState()){//Goal test
+                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                s=s.substring(1);
+                existingStates = new HashSet<String>();
+                return s;
+            }
+            else{
+                String[] LastNode=node.operator.split(",",-1);
+                String lastOperator=LastNode[LastNode.length-1];
+
+                State checkState=node.pickUp();
+                if(checkState!=null ){
+                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.drop();
+                if(checkState!=null){
+                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.retrieve();
+                if(checkState!=null){
+                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.right();
+                if(checkState!=null && !lastOperator.equals("left")){
+                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.left();
+                if(checkState!=null&& !lastOperator.equals("right")){
+                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.up();
+                if(checkState!=null&& !lastOperator.equals("down")){
+                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+                checkState=node.down();
+                if(checkState!=null&& !lastOperator.equals("up")){
+                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,checkState.dead);
+                    if(!isDuplicate(addNode.state)) {
+                        addNode.calculateHeuristic(heuristicNumber);
+                        nodes.add(addNode);
+                        nodesNumber++;
+                    }
+                }
+
+
+
+            }
+
+        }
+        return "no solution";
+    }
     public static String BFS(String grid){
         int nodesNumber = 0;
         State firstState=new State(grid);
@@ -429,6 +520,11 @@ public class CoastGuard {
                 return greedy(grid, 1);
             case "GR2":
                 return greedy(grid, 2);
+            case "AS1":
+                return AStar(grid, 1);
+            case "AS2":
+                return AStar(grid, 2);
+
         }
         existingStates = new HashSet<String>();
         return "no solution";
@@ -446,8 +542,8 @@ public class CoastGuard {
     public static void main (String []args){
 
 
-        String grid= "7,5;40;2,3;3,6;1,1,10,4,5,90;";
-        String s1=solve(grid,"GR2",true);
+        String grid= "8,5;60;4,6;2,7;3,4,37,3,5,93,4,0,40;";
+        String s1=solve(grid,"AS1",true);
         String s2=solve(grid,"BF",true);
         //"5,6;50;0,1;0,4,3,3;1,1,90;"
         System.out.println(s1);

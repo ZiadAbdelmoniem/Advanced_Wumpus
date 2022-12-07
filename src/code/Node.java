@@ -28,24 +28,37 @@ public class Node {
         this.heuristic_cost = heuristic_cost;
 
     }
-    public void calculateHeuristic(int heuristicNumber){
-        if (heuristicNumber == 1){
+    public void calculateHeuristic(int heuristicNumber) {
+        if (heuristicNumber == 1) {
             int passengersOnShips = 0;
-            for(int i = 0; i< this.state.ships.length;i++){
+            for (int i = 0; i < this.state.ships.length; i++) {
                 passengersOnShips += this.state.ships[i][2];
             }
 
-            int passengersOnGuardShip = this.state.capacity;
+            int passengersOnGuardShip = 0;
+            if (this.state.capacity > 1) {
+                passengersOnGuardShip = 1;
+            }
 
-            this.heuristic_cost = 2*passengersOnShips + passengersOnGuardShip;
-        }
-
-        else if (heuristicNumber == 2){
+            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip;
+        } else if (heuristicNumber == 2) {
             int passengersOnShips = 0;
-            for(int i = 0; i< this.state.ships.length;i++){
+            int blackBoxesNotRetrieved=0;
+            for (int i = 0; i < this.state.ships.length; i++) {
                 passengersOnShips += this.state.ships[i][2];
             }
-            this.heuristic_cost = passengersOnShips * (this.state.dead / 2*(this.state.saved+1));
+
+            int passengersOnGuardShip = 0;
+            if (this.state.capacity > 1) {
+                passengersOnGuardShip = 1;
+            }
+            for (int i = 0; i < this.state.blackbox.length; i++) {
+                if(this.state.blackbox[i][2]<21){
+                    blackBoxesNotRetrieved++;
+                }
+            }
+
+            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip+blackBoxesNotRetrieved;
         }
     }
 
