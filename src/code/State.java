@@ -73,6 +73,33 @@ public class State {
 
     }
 
+    public static void print2D(String mat[][]) {
+        for (String[] row : mat)
+            System.out.println(Arrays.toString(row));
+    }
+
+    public void print2d(){
+        String [][]curr_Grid=new String[this.n][this.m];
+        curr_Grid[this.currentx][this.currentx]="CoastGuard/"+this.capacity+"/"+this.pickedUp;
+
+        for (int i = 0; i < stations.length; i++) {
+            int x=stations[i][0];
+            int y=stations[i][1];
+            curr_Grid[x][y]="Station";
+        }
+
+        for (int i = 0; i < ships.length; i++) {
+            int x=ships[i][0];
+            int y=ships[i][1];
+            int p=ships[i][2];
+            curr_Grid[x][y]="Ship/"+p;
+        }
+
+        System.out.println("Saved: "+this.saved);
+        print2D(curr_Grid);
+
+    }
+
     public boolean isGoalState(){
 
         //check for every ship
