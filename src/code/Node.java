@@ -1,243 +1,135 @@
 package code;
 
+
 public class Node {
+    State state;
+    String operator;
+    int depth;
+    int pathCost;
 
-    public State state;
-    public Node parent;
-    public String operator;
-    public int depth;
-    public int path_cost;
-
-    public int heuristic_cost;
-
-    public Node(State s, Node parent, String operator, int depth, int path_cost){
-        this.state=s;
-        this.parent=parent;
-        this.operator=operator;
-        this.depth=depth;
-        this.path_cost=path_cost;
-
+    public Node(State state,String oper,int dep,int cost){
+        this.state = state;
+        this.operator = oper;
+        this.depth = dep;
+        this.pathCost = cost;
     }
 
-    public Node(State s, Node parent, String operator, int depth, int path_cost, int heuristic_cost){
-        this.state=s;
-        this.parent=parent;
-        this.operator=operator;
-        this.depth=depth;
-        this.path_cost=path_cost;
-        this.heuristic_cost = heuristic_cost;
-
-    }
-    public void calculateHeuristic(int heuristicNumber) {
-        if (heuristicNumber == 1) {
-            int passengersOnShips = 0;
-            for (int i = 0; i < this.state.ships.length; i++) {
-                passengersOnShips += this.state.ships[i][2];
-            }
-
-            int passengersOnGuardShip = 0;
-            if (this.state.capacity > 1) {
-                passengersOnGuardShip = 1;
-            }
-
-            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip;
-        } else if (heuristicNumber == 2) {
-            int passengersOnShips = 0;
-            int blackBoxesNotRetrieved=0;
-            for (int i = 0; i < this.state.ships.length; i++) {
-                passengersOnShips += this.state.ships[i][2];
-            }
-
-            int passengersOnGuardShip = 0;
-            if (this.state.capacity > 1) {
-                passengersOnGuardShip = 1;
-            }
-            for (int i = 0; i < this.state.blackbox.length; i++) {
-                if(this.state.blackbox[i][2]<21){
-                    blackBoxesNotRetrieved++;
-                }
-            }
-            if(passengersOnShips==0){
-                this.heuristic_cost =blackBoxesNotRetrieved+passengersOnGuardShip;
-
-            }
-            else{
-                this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip;
-
-            }
-             }
+    @Override
+    public String toString(){
+        String s="";
+        s+= this.state.toString();
+        return s;
     }
 
-    public State right(){
-        State newState = new State();
-        newState.copy(state);
-        if(newState.currenty!=newState.m-1){
-            newState.currenty++;
-            newState=death(newState);
-            return newState;
-        }
-        else{
-            return null;
-        }
-
-    }
-    public State left(){
-        State newState = new State();
-        newState.copy(state);
-        if(newState.currenty!=0){
-            newState.currenty--;
-            newState=death(newState);
-            return newState;
-        }
-        else{
-            return null;
-        }
-
-    }
-    public State down(){
-        State newState = new State();
-        newState.copy(state);
-        if(newState.currentx!= newState.n-1){
-            newState.currentx++;
-            newState=death(newState);
-            return newState;
-        }
-        else{
-            return null;
-        }
-
-    }
-    public State up(){
-        State newState = new State();
-        newState.copy(state);
-        if(newState.currentx!= 0){
-            newState.currentx--;
-            newState=death(newState);
-            return newState;
-        }
-        else{
-            return null;
-        }
-
-    }
-    public State pickUp(){
-        State newState = new State();
-        newState.copy(state);
-        if(newState.capacity< newState.c){
-            boolean shipExists=false;
-            for (int[]ship:newState.ships ) {
-                if(ship[0]== newState.currentx &&ship[1]== newState.currenty &&ship[2]>0){//ship is in out position and has passengers
-                    shipExists=true;
-                    int carriageSpace=newState.c-newState.capacity ;
-                    if(carriageSpace<ship[2]){
-                    ship[2]-=carriageSpace;
-                    newState.capacity=newState.c;
-                    newState.saved+= carriageSpace;
-                }
-                    else{
-                        newState.capacity+=ship[2];
-                        ship[2]=0;
-                        newState.saved+= ship[2];
-                        for (int[]blackbox: newState.blackbox
-                             ) {if(blackbox[0]==ship[0] &&blackbox[1]==ship[1]){
-                                 blackbox[2]=1;
-                        }
-
-                        }
-                    }
-                }
-            }
-            if(!shipExists){
-                return null;
-            }
-            newState=death(newState);
-            return newState;
-        }
-        else{
-            return null;
-        }
-
-    }
-    public State retrieve(){
-        State newState = new State();
-        newState.copy(state);
-        boolean shipExists=false;
-        for (int[]ship:newState.ships ) {
-            if (ship[0] == newState.currentx && ship[1] == newState.currenty && ship[2] == 0) {//ship is in out position and has passengers
-                for (int[]blackbox:newState.blackbox
-                     ) {
-                    if(blackbox[0]==ship[0] &&blackbox[1]==ship[1] && blackbox[2]<21){
-                        shipExists = true;
-                        blackbox[2]=22;
-                        newState.pickedUp++;
-                    }
-                }
-
-            }
-        }
-        if(!shipExists){
-            return null;
-        }
-            newState=death(newState);
-            return newState;
-
-    }
-    public State drop(){
-        State newState = new State();
-        newState.copy(state);
-        if(newState.capacity>0){
-            boolean stationExists=false;
-            for (int[]station: newState.stations
-                 ) {if(station[0]== newState.currentx &&station[1]== newState.currenty){
-                     stationExists=true;
-                     newState.capacity=0;
-            }
-
-            }
-            if(!stationExists){
-                return null;
-            }
-
-            newState=death(newState);
-            return newState;
+    @Override
+    public boolean equals(Object a){
+        Node n = (Node) a ;
+        if(n.state.equals(this.state) && this.operator.equals(n.operator) && this.depth == n.depth && n.pathCost == this.pathCost){
+            return true;
         }else{
+            return false;
+        }
+    }
+
+    public Node moveLeft (){
+        Node a = deepClone(this);
+        a.state.checks();
+        a.state.coastGuard_y--;
+        if(a.state.coastGuard_y < 0 || a.state.coastGuard_y>a.state.n-1){
             return null;
         }
+        a.operator+="left,";
+        a.state.action();
+        a.depth++;
+        
+        return a;
     }
-    public static State death(State newState){
-        for (int i = 0; i <newState.ships.length ; i++) {
-            if(newState.ships[i][2]>0){
-                newState.ships[i][2]--;
-                newState.dead++;
-                if(newState.ships[i][2]==0){
-                    newState.blackbox[i][2]=1;//replace ship with wreck
-                }
-            }
-
+    public Node moveUp (){
+        Node a = deepClone(this);
+        a.state.checks();
+        a.state.coastGuard_x--;
+        if(a.state.coastGuard_x < 0 || a.state.coastGuard_x>a.state.m-1){
+            return null;
         }
-        for (int i = 0; i <newState.blackbox.length ; i++) {
-            if(newState.blackbox[i][2]>0){
-                newState.blackbox[i][2]++;
-            }
+        a.operator+="up,";
+        a.state.action();
+        a.depth++;
+        
+        return a;
+    }
+    public Node moveDown (){
+        Node a = deepClone(this);
+        a.state.checks();
+        a.state.coastGuard_x++;
+        if(a.state.coastGuard_x < 0 || a.state.coastGuard_x>a.state.m-1){
+            return null;
         }
-        return newState;
+        a.operator+="down,";
+        a.state.action();
+        a.depth++;
+        return a;
+    }
+    public Node moveRight (){
+        Node a = deepClone(this);
+        a.state.checks();
+        a.state.coastGuard_y +=1;
+   
+        if(a.state.coastGuard_y < 0 || a.state.coastGuard_y>a.state.n-1){
+            return null;
+        }
+        a.operator+="right,";
+        a.depth++;
+        a.state.action();
+        return a;
+    }
+    public Node pickUp(){
+        Node a = deepClone(this);
+        a.state.checks();
+        if(a.state.onShip){
+            if(a.state.guard.numberOfPassengers == a.state.guard.capacity){return null;}
+            a.state.guard.pickUp(a.state.currentShip);
+            a.operator+="pickup,";
+            a.state.action();
+            a.depth++;
+            return a;
+        }
+       
+        return null;
+    }
+    public Node drop(){
+        Node a = deepClone(this);
+        a.state.checks();
+        if(a.state.onStation){
+            a.state.passengersSaved += a.state.guard.numberOfPassengers;
+            a.state.guard.numberOfPassengers =0;
+            a.state.action();
+            a.operator+="drop,";
+            a.depth++;
+            return a;
+        }
+        return null;
+    }
+    public Node reitreive(){
+        Node a = deepClone(this);
+        a.state.checks();
+        if(a.state.onWreck && a.state.currentShip.isReitrivable){
+            a.state.guard.reitreiveBox(a.state.currentShip);
+            a.state.currentShip.isReitrieved = true;
+            a.state.blackBoxesRetreived++;
+             a.operator+="retrieve,";
+            a.state.action();
+            a.depth++;
+            return a;
+        }
+        return null ;
+    }
+    public Node deepClone(Node n){
+        State s = n.state.deepClone();
+        return new Node(s,n.operator,n.depth,n.pathCost);
     }
 
-    public static void main(String[] args) {
-        State m=new State("5,6;50;1,1;0,4,3,3;1,1,50;");
-        Node trial=new Node(m,null,null,0,0);
-        State newState=trial.up();
-        Node trial2=new Node(newState,null,null,0,0);
-        State newState1=trial2.up();
 
-
-
-        System.out.println(newState1.dead);
-        System.out.println(newState1.currentx);
-        System.out.println(newState1.currenty);
-        System.out.println(newState1.blackbox[0][2]);
-        System.out.println(newState1.ships[0][2]);
-        System.out.println(newState1.capacity);
-        System.out.println(newState1.pickedUp);
-    }
+    
+    
+    
 }
