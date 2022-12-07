@@ -8,6 +8,8 @@ public class Node {
     public int depth;
     public int path_cost;
 
+    public int heuristic_cost;
+
     public Node(State s, Node parent, String operator, int depth, int path_cost){
         this.state=s;
         this.parent=parent;
@@ -17,7 +19,35 @@ public class Node {
 
     }
 
+    public Node(State s, Node parent, String operator, int depth, int path_cost, int heuristic_cost){
+        this.state=s;
+        this.parent=parent;
+        this.operator=operator;
+        this.depth=depth;
+        this.path_cost=path_cost;
+        this.heuristic_cost = heuristic_cost;
 
+    }
+    public void calculateHeuristic(int heuristicNumber){
+        if (heuristicNumber == 1){
+            int passengersOnShips = 0;
+            for(int i = 0; i< this.state.ships.length;i++){
+                passengersOnShips += this.state.ships[i][2];
+            }
+
+            int passengersOnGuardShip = this.state.capacity;
+
+            this.heuristic_cost = 2*passengersOnShips + passengersOnGuardShip;
+        }
+
+        else if (heuristicNumber == 2){
+            int passengersOnShips = 0;
+            for(int i = 0; i< this.state.ships.length;i++){
+                passengersOnShips += this.state.ships[i][2];
+            }
+            this.heuristic_cost = passengersOnShips * (this.state.dead / 2*(this.state.saved+1));
+        }
+    }
 
     public State right(){
         State newState = new State();
