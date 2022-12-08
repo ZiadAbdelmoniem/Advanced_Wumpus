@@ -3,57 +3,76 @@ package code;
 import java.util.Arrays;
 
 public class State {
-    public int c;
+    public int coastGuardCapacity;
     public int m;
     public int n;
-    public int cgX;
-    public int cgY;
 
-    public int currentx;
-    public int currenty;
+    //coast guard initial coordinates:
+    public int initialCoastGuardX;
+    public int initialCoastGuardY;
+
+    //coast guard current coordinates:
+    public int currentCoastGuardX;
+    public int currentCoastGuardY;
     public int [][] ships;
     public int [][] stations;
+
     public int [][] blackbox;
-    public int capacity=0;
+    public int passengersOnCoastGuard = 0;
     public int saved=0;
     public int dead=0;
-    public int pickedUp=0;
+    public int blackboxesPickedUp =0;
+
+    //empty constructor so we can initialize a new empty state and later deep copy another node's state into it
     public State(){
 
     }
     public State(String grid){
-        //M, N ; C; cgX, cgY ;
-        //I1X, I1Y, I2X, I2Y, ...IiX, IiY ;
-        //S1X, S1Y, S1Passengers, S2X, S2Y, S2Passengers, ...Sj X, Sj Y, Sj Passengers;
-        String[] arrOfStr = grid.split(";", -1);
+
+        String[] gridStringArr = grid.split(";", -1);
+
         //initializing the size of the grid
-        String []mxn=arrOfStr[0].split(",",-1);
+        String[] mxn=gridStringArr[0].split(",",-1);
         m=Integer.parseInt(mxn[0]);
         n=Integer.parseInt(mxn[1]);
-        //initializing the maximum number of people on the guard ship
-        this.c=Integer.parseInt(arrOfStr[1]);
-        //initializing the initial position of the guard ship
-        String []cgXY=arrOfStr[2].split(",",-1);
-        this.cgX=Integer.parseInt(cgXY[0]);
-        this.cgY=  Integer.parseInt(cgXY[1]);
-        this.currentx=cgX;
-        this.currenty=cgY;
 
-        //initializing the station positions
-        String[] sX=arrOfStr[3].split(",",-1);
-        int noOfStations=(sX.length)/2;
+        //initializing the maximum number of people on the guard ship
+        this.coastGuardCapacity =Integer.parseInt(gridStringArr[1]);
+
+        //initializing the initial position of the guard ship
+        String[] cgXY=gridStringArr[2].split(",",-1);
+        this.initialCoastGuardX =Integer.parseInt(cgXY[0]);
+        this.initialCoastGuardY =  Integer.parseInt(cgXY[1]);
+        this.currentCoastGuardX = initialCoastGuardX;
+        this.currentCoastGuardY = initialCoastGuardY;
+
+        //initializing the station positions:
+        /*
+        creating a 2d array with length = the number of stations. each array inside the 2d array is of length 2
+        and represents the coordinates:- index 0: X coordinate, index 1: Y coordinate
+        */
+        String[] sXY=gridStringArr[3].split(",",-1);
+        int noOfStations=(sXY.length)/2;
         this.stations=new int[noOfStations][2];
         int loop=0;
-        for(int i=0;i< sX.length;i+=2){
-            int X=Integer.parseInt(sX[i]);
-            int Y=Integer.parseInt(sX[i+1]);
+        for(int i=0;i< sXY.length;i+=2){
+            int X=Integer.parseInt(sXY[i]);
+            int Y=Integer.parseInt(sXY[i+1]);
             stations[loop][0]=X;
             stations[loop][1]=Y;
             loop++;
         }
 
-        //initializing the ships positions
-        String[] shipX=arrOfStr[4].split(",",-1);
+        //initializing the ships & blackboxes positions:
+        /*
+        creating a 2d array whose length = the number of ships. each array inside the 2d array is of length 3
+        and represents the coordinates and passengers:- index 0: X coordinate, index 1: Y coordinate,
+        index 2: number of passengers.
+        for blackboxes: same respective coordinates however index 2 represents damage. it is initialized with 0,
+        when index 2's value is 21, it means either the counter counted up to 21 and the box is no longer retrievable,
+        or the coast guard collected the box and the value was set to 21 in order to mark that it is already collected
+         */
+        String[] shipX=gridStringArr[4].split(",",-1);
         int noOfShips=(shipX.length)/3;
         this.ships=new int[noOfShips][3];
         this.blackbox=new int[noOfShips][3];
@@ -111,12 +130,12 @@ public class State {
                 }
             }
         }
-        if(curr_Grid[this.currentx][this.currenty]==null){
-            curr_Grid[this.currentx][this.currenty]="CoastGuard/"+this.capacity+"/"+this.pickedUp;
+        if(curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]==null){
+            curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]="CoastGuard/"+this.passengersOnCoastGuard +"/"+this.blackboxesPickedUp;
 
         }
         else{
-            curr_Grid[this.currentx][this.currenty]= curr_Grid[this.currentx][this.currenty]+" "+"CoastGuard/"+this.capacity+"/"+this.pickedUp;
+            curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]= curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]+" "+"CoastGuard/"+this.passengersOnCoastGuard +"/"+this.blackboxesPickedUp;
 
         }
 
@@ -125,6 +144,7 @@ public class State {
 
     }
 
+    // goal test for state
     public boolean isGoalState(){
 
         //check for every ship
@@ -144,53 +164,51 @@ public class State {
         }
 
         //check if the coast guard ship has any passengers
-        if(this.capacity>0){
+        if(this.passengersOnCoastGuard >0){
             return false;
         }
 
         return true;
     }
 
-
+    /*
+    overriding toString method to be able to get a string value which is used for comparison in order to check
+    duplicate states. only variables that are needed for comparison are added to the string.
+     */
     @Override
     public String toString(){
-        return ""+currentx+""+currenty+""+Arrays.deepToString(ships)+""+Arrays.deepToString(blackbox)+""+capacity+
-                ""+saved+""+dead+""+pickedUp;
+        return ""+ currentCoastGuardX +""+ currentCoastGuardY +""+Arrays.deepToString(ships)+""+Arrays.deepToString(blackbox)+""+ passengersOnCoastGuard +
+                ""+saved+""+dead+""+ blackboxesPickedUp;
     }
 
-
-    public static int[][] deepCopy(int[][] original) {
-        if (original == null) {
+    //deep copying 2d array which we use to deep copy state.
+    public static int[][] deepCopy(int[][] arr) {
+        if (arr == null) {
             return null;
         }
 
-        final int[][] result = new int[original.length][];
-        for (int i = 0; i < original.length; i++) {
-            result[i] = Arrays.copyOf(original[i], original[i].length);
+        final int[][] result = new int[arr.length][];
+        for (int i = 0; i < arr.length; i++) {
+            result[i] = Arrays.copyOf(arr[i], arr[i].length);
         }
         return result;
     }
+
+    //deep copy state. s is the state to be copied. The function is invoked on the empty state which the values are copied to
     public void copy(State s){
-        this.c = s.c;
+        this.coastGuardCapacity = s.coastGuardCapacity;
         this.m = s.m;
         this.n = s.n;
-        this.cgX = s.cgX;
-        this.currentx = s.currentx;
-        this.currenty = s.currenty;
+        this.initialCoastGuardX = s.initialCoastGuardX;
+        this.currentCoastGuardX = s.currentCoastGuardX;
+        this.currentCoastGuardY = s.currentCoastGuardY;
         this.ships = deepCopy(s.ships);
         this.stations = deepCopy(s.stations);
         this.blackbox = deepCopy(s.blackbox);
-        this.capacity = s.capacity;
+        this.passengersOnCoastGuard = s.passengersOnCoastGuard;
         this.saved = s.saved;
         this.dead = s.dead;
-        this.pickedUp = s.pickedUp;
-    }
-
-   public static void main(String[] args) {
-       State m=new State("5,6;50;1,1;0,4,3,3;1,1,50;");
-
-
-
+        this.blackboxesPickedUp = s.blackboxesPickedUp;
     }
 
 }

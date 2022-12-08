@@ -4,30 +4,25 @@ public class Node {
 
     public State state;
     public Node parent;
-    public String operator;
+    public String operators;
     public int depth;
     public int path_cost;
 
-    public int heuristic_cost;
+    public int heuristic_cost = 0;
 
-    public Node(State s, Node parent, String operator, int depth, int path_cost){
+    public Node(State s, Node parent, String operators, int depth, int path_cost){
         this.state=s;
         this.parent=parent;
-        this.operator=operator;
+        this.operators = operators;
         this.depth=depth;
         this.path_cost=path_cost;
 
     }
 
-    public Node(State s, Node parent, String operator, int depth, int path_cost, int heuristic_cost){
-        this.state=s;
-        this.parent=parent;
-        this.operator=operator;
-        this.depth=depth;
-        this.path_cost=path_cost;
-        this.heuristic_cost = heuristic_cost;
-
-    }
+    /*
+    function for calculating and setting heuristic cost of the node where heuristicNumber is the number of
+    heuristic function chosen.
+     */
     public void calculateHeuristic(int heuristicNumber) {
         if (heuristicNumber == 1) {
             int passengersOnShips = 0;
@@ -36,11 +31,11 @@ public class Node {
             }
 
             int passengersOnGuardShip = 0;
-            if (this.state.capacity > 1) {
+            if (this.state.passengersOnCoastGuard > 1) {
                 passengersOnGuardShip = 1;
             }
 
-            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip;
+            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.coastGuardCapacity)) + passengersOnGuardShip;
         } else if (heuristicNumber == 2) {
             int passengersOnShips = 0;
             int blackBoxesNotRetrieved=0;
@@ -49,7 +44,7 @@ public class Node {
             }
 
             int passengersOnGuardShip = 0;
-            if (this.state.capacity > 1) {
+            if (this.state.passengersOnCoastGuard > 1) {
                 passengersOnGuardShip = 1;
             }
             for (int i = 0; i < this.state.blackbox.length; i++) {
@@ -62,17 +57,23 @@ public class Node {
 
             }
             else{
-                this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.c)) + passengersOnGuardShip;
+                this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.coastGuardCapacity)) + passengersOnGuardShip;
 
             }
              }
     }
 
+    /*
+    for all the following actions/operators (right, left, down, up, pickUp, retrieve, drop), we check if that action is possible,
+    if it is, return the state after taking that action else return null.
+     */
+
+    //move right action
     public State right(){
         State newState = new State();
         newState.copy(state);
-        if(newState.currenty!=newState.m-1){
-            newState.currenty++;
+        if(newState.currentCoastGuardY !=newState.m-1){
+            newState.currentCoastGuardY++;
             newState=death(newState);
             return newState;
         }
@@ -81,11 +82,13 @@ public class Node {
         }
 
     }
+
+    //move left action
     public State left(){
         State newState = new State();
         newState.copy(state);
-        if(newState.currenty!=0){
-            newState.currenty--;
+        if(newState.currentCoastGuardY !=0){
+            newState.currentCoastGuardY--;
             newState=death(newState);
             return newState;
         }
@@ -94,11 +97,13 @@ public class Node {
         }
 
     }
+
+    //move down action
     public State down(){
         State newState = new State();
         newState.copy(state);
-        if(newState.currentx!= newState.n-1){
-            newState.currentx++;
+        if(newState.currentCoastGuardX != newState.n-1){
+            newState.currentCoastGuardX++;
             newState=death(newState);
             return newState;
         }
@@ -107,11 +112,13 @@ public class Node {
         }
 
     }
+
+    //move up action
     public State up(){
         State newState = new State();
         newState.copy(state);
-        if(newState.currentx!= 0){
-            newState.currentx--;
+        if(newState.currentCoastGuardX != 0){
+            newState.currentCoastGuardX--;
             newState=death(newState);
             return newState;
         }
@@ -120,22 +127,24 @@ public class Node {
         }
 
     }
+
+    //pickup action
     public State pickUp(){
         State newState = new State();
         newState.copy(state);
-        if(newState.capacity< newState.c){
+        if(newState.passengersOnCoastGuard < newState.coastGuardCapacity){
             boolean shipExists=false;
             for (int[]ship:newState.ships ) {
-                if(ship[0]== newState.currentx &&ship[1]== newState.currenty &&ship[2]>0){//ship is in out position and has passengers
+                if(ship[0]== newState.currentCoastGuardX &&ship[1]== newState.currentCoastGuardY &&ship[2]>0){//ship is in out position and has passengers
                     shipExists=true;
-                    int carriageSpace=newState.c-newState.capacity ;
+                    int carriageSpace=newState.coastGuardCapacity -newState.passengersOnCoastGuard;
                     if(carriageSpace<ship[2]){
                     ship[2]-=carriageSpace;
-                    newState.capacity=newState.c;
+                    newState.passengersOnCoastGuard =newState.coastGuardCapacity;
                     newState.saved+= carriageSpace;
                 }
                     else{
-                        newState.capacity+=ship[2];
+                        newState.passengersOnCoastGuard +=ship[2];
                         ship[2]=0;
                         newState.saved+= ship[2];
                         for (int[]blackbox: newState.blackbox
@@ -158,18 +167,20 @@ public class Node {
         }
 
     }
+
+    //retrieve action
     public State retrieve(){
         State newState = new State();
         newState.copy(state);
         boolean shipExists=false;
         for (int[]ship:newState.ships ) {
-            if (ship[0] == newState.currentx && ship[1] == newState.currenty && ship[2] == 0) {//ship is in out position and has passengers
+            if (ship[0] == newState.currentCoastGuardX && ship[1] == newState.currentCoastGuardY && ship[2] == 0) {//ship is in out position and has passengers
                 for (int[]blackbox:newState.blackbox
                      ) {
                     if(blackbox[0]==ship[0] &&blackbox[1]==ship[1] && blackbox[2]<21){
                         shipExists = true;
                         blackbox[2]=22;
-                        newState.pickedUp++;
+                        newState.blackboxesPickedUp++;
                     }
                 }
 
@@ -182,15 +193,17 @@ public class Node {
             return newState;
 
     }
+
+    //drop action
     public State drop(){
         State newState = new State();
         newState.copy(state);
-        if(newState.capacity>0){
+        if(newState.passengersOnCoastGuard >0){
             boolean stationExists=false;
             for (int[]station: newState.stations
-                 ) {if(station[0]== newState.currentx &&station[1]== newState.currenty){
+                 ) {if(station[0]== newState.currentCoastGuardX &&station[1]== newState.currentCoastGuardY){
                      stationExists=true;
-                     newState.capacity=0;
+                     newState.passengersOnCoastGuard =0;
             }
 
             }
@@ -204,6 +217,8 @@ public class Node {
             return null;
         }
     }
+
+
     public static State death(State newState){
         for (int i = 0; i <newState.ships.length ; i++) {
             if(newState.ships[i][2]>0){
@@ -233,11 +248,11 @@ public class Node {
 
 
         System.out.println(newState1.dead);
-        System.out.println(newState1.currentx);
-        System.out.println(newState1.currenty);
+        System.out.println(newState1.currentCoastGuardX);
+        System.out.println(newState1.currentCoastGuardY);
         System.out.println(newState1.blackbox[0][2]);
         System.out.println(newState1.ships[0][2]);
-        System.out.println(newState1.capacity);
-        System.out.println(newState1.pickedUp);
+        System.out.println(newState1.passengersOnCoastGuard);
+        System.out.println(newState1.blackboxesPickedUp);
     }
 }

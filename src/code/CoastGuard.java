@@ -5,14 +5,18 @@ import java.util.*;
 
 public class CoastGuard {
 
+    /*
+    hashset for storing state strings (refer to the overriden toString in State.java) in order to detect duplicate
+    states
+     */
     static HashSet<String> existingStates = new HashSet<String>();
 
     public static String genGrid(){
-        //Double.POSITIVE_INFINITY
 
         String res="";
         String stations="";
         String ships="";
+        //variable names here refer to grid format
         int M=(int) ((Math.random() * (15 - 5)) + 5);
         int N=(int) ((Math.random() * (15 - 5)) + 5);
         int C=(int) ((Math.random() * (100 - 30)) + 30);
@@ -22,25 +26,32 @@ public class CoastGuard {
         res+=M+","+N+";"+C+";"+cgX+","+cgY+";";
 
         int [][]myGrid=new int[M][N];
+
+        //set to non-zero value to mark the cell in which the coast guard is in as taken
+        // 9 = coast guard
         myGrid[cgX][cgY]=9;
 
         //mandatory station + ship
         boolean flag=true;
         while(flag){
 
-        int s1=(int) ((Math.random() * (M - 1)) + 1);
-        int s2=(int) ((Math.random() * (N - 1)) + 1);
-        int sh1=(int) ((Math.random() * (M - 1)) + 1);
-        int sh2=(int) ((Math.random() * (N - 1)) + 1);
-        int p1=(int) ((Math.random() * (100 - 1)) + 1);
+        int stationX=(int) ((Math.random() * (M - 1)) + 1);
+        int stationY=(int) ((Math.random() * (N - 1)) + 1);
+        int shipX=(int) ((Math.random() * (M - 1)) + 1);
+        int shipY=(int) ((Math.random() * (N - 1)) + 1);
+        int passengersOnShip=(int) ((Math.random() * (100 - 1)) + 1);
 
-            if(myGrid[s1][s2]==0 && myGrid[sh1][sh2]==0){
-            myGrid[s1][s2]=1;
-            myGrid[sh1][sh2]=2;
-            stations=s1+","+s2;
-            ships=sh1+","+sh2+","+p1;
+            if(myGrid[stationX][stationY]==0 && myGrid[shipX][shipY]==0){
+            //set positions of ship and station to non-zero values to mark as taken if not already taken
+            // 1 = station
+            // 2 = ship
+            myGrid[stationX][stationY]=1;
+            myGrid[shipX][shipY]=2;
+            stations=stationX+","+stationY;
+            ships=shipX+","+shipY+","+passengersOnShip;
             flag=false;
         }}
+
 
         //position of a station=1
         //position of a ship=2
@@ -78,7 +89,7 @@ public class CoastGuard {
         while(!nodes.isEmpty()){
             Node node=nodes.remove();
             if(node.state.isGoalState()){//Goal test
-                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                String s=node.operators +";"+node.state.dead+";"+node.state.blackboxesPickedUp +";"+nodesNumber;
                 s=s.substring(1);
                 existingStates = new HashSet<String>();
                 return s;
@@ -86,11 +97,11 @@ public class CoastGuard {
             }
             else{
                 State checkState=node.pickUp();
-                String[] LastNode=node.operator.split(",",-1);
+                String[] LastNode=node.operators.split(",",-1);
                 String lastOperator=LastNode[LastNode.length-1];
 
                 if(checkState!=null ){
-                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",pickup",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.add(addNode);
                         nodesNumber++;
@@ -98,7 +109,7 @@ public class CoastGuard {
                 }
                 checkState=node.drop();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",drop",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.add(addNode);
                         nodesNumber++;
@@ -106,7 +117,7 @@ public class CoastGuard {
                 }
                 checkState=node.retrieve();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",retrieve",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.add(addNode);
                         nodesNumber++;
@@ -114,7 +125,7 @@ public class CoastGuard {
                 }
                 checkState=node.right();
                 if(checkState!=null && !lastOperator.equals("left")){
-                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",right",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
 
                         nodes.add(addNode);
@@ -123,7 +134,7 @@ public class CoastGuard {
                 }
                 checkState=node.left();
                 if(checkState!=null&& !lastOperator.equals("right")){
-                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",left",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.add(addNode);
                         nodesNumber++;
@@ -131,7 +142,7 @@ public class CoastGuard {
                 }
                 checkState=node.up();
                 if(checkState!=null&& !lastOperator.equals("down")){
-                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",up",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.add(addNode);
                         nodesNumber++;
@@ -139,7 +150,7 @@ public class CoastGuard {
                 }
                 checkState=node.down();
                 if(checkState!=null&& !lastOperator.equals("up")){
-                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",down",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.add(addNode);
                         nodesNumber++;
@@ -161,7 +172,7 @@ public class CoastGuard {
         while(!nodes.isEmpty()){
             Node node=nodes.pop();
             if(node.state.isGoalState()){//Goal test
-                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                String s=node.operators +";"+node.state.dead+";"+node.state.blackboxesPickedUp +";"+nodesNumber;
                 s=s.substring(1);
                 existingStates = new HashSet<String>();
                 return s;
@@ -169,11 +180,11 @@ public class CoastGuard {
             }
             else{
                 State checkState=node.pickUp();
-                String[] LastNode=node.operator.split(",",-1);
+                String[] LastNode=node.operators.split(",",-1);
                 String lastOperator=LastNode[LastNode.length-1];
 
                 if(checkState!=null ){
-                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",pickup",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.push(addNode);
                         nodesNumber++;
@@ -181,7 +192,7 @@ public class CoastGuard {
                 }
                 checkState=node.drop();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",drop",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.push(addNode);
                         nodesNumber++;
@@ -189,7 +200,7 @@ public class CoastGuard {
                 }
                 checkState=node.retrieve();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",retrieve",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.push(addNode);
                         nodesNumber++;
@@ -197,7 +208,7 @@ public class CoastGuard {
                 }
                 checkState=node.right();
                 if(checkState!=null && !lastOperator.equals("left")){
-                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",right",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
 
                         nodes.push(addNode);
@@ -206,7 +217,7 @@ public class CoastGuard {
                 }
                 checkState=node.left();
                 if(checkState!=null&& !lastOperator.equals("right")){
-                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",left",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.push(addNode);
                         nodesNumber++;
@@ -214,7 +225,7 @@ public class CoastGuard {
                 }
                 checkState=node.up();
                 if(checkState!=null&& !lastOperator.equals("down")){
-                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",up",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.push(addNode);
                         nodesNumber++;
@@ -222,7 +233,7 @@ public class CoastGuard {
                 }
                 checkState=node.down();
                 if(checkState!=null&& !lastOperator.equals("up")){
-                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",down",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         nodes.push(addNode);
                         nodesNumber++;
@@ -247,7 +258,7 @@ public class CoastGuard {
                 int nodesNumber = 0;
                 Node node = nodes.pop();
                 if (node.state.isGoalState()) {//Goal test
-                    String s = node.operator + ";" + node.state.dead + ";" + node.state.pickedUp + ";" + nodesNumber;
+                    String s = node.operators + ";" + node.state.dead + ";" + node.state.blackboxesPickedUp + ";" + nodesNumber;
                     s = s.substring(1);
                     existingStates = new HashSet<String>();
                     return s;
@@ -256,11 +267,11 @@ public class CoastGuard {
                     int childDepth = node.depth + 1;
                     if (childDepth <= maxDepth) {
                     State checkState = node.pickUp();
-                    String[] LastNode = node.operator.split(",", -1);
+                    String[] LastNode = node.operators.split(",", -1);
                     String lastOperator = LastNode[LastNode.length - 1];
 
                     if (checkState != null) {
-                        Node addNode = new Node(checkState, node, node.operator + ",pickup", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",pickup", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
                             nodes.push(addNode);
                             nodesNumber++;
@@ -268,7 +279,7 @@ public class CoastGuard {
                     }
                     checkState = node.drop();
                     if (checkState != null) {
-                        Node addNode = new Node(checkState, node, node.operator + ",drop", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",drop", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
                             nodes.push(addNode);
                             nodesNumber++;
@@ -276,7 +287,7 @@ public class CoastGuard {
                     }
                     checkState = node.retrieve();
                     if (checkState != null) {
-                        Node addNode = new Node(checkState, node, node.operator + ",retrieve", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",retrieve", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
                             nodes.push(addNode);
                             nodesNumber++;
@@ -284,7 +295,7 @@ public class CoastGuard {
                     }
                     checkState = node.right();
                     if (checkState != null && !lastOperator.equals("left")) {
-                        Node addNode = new Node(checkState, node, node.operator + ",right", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",right", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
 
                             nodes.push(addNode);
@@ -293,7 +304,7 @@ public class CoastGuard {
                     }
                     checkState = node.left();
                     if (checkState != null && !lastOperator.equals("right")) {
-                        Node addNode = new Node(checkState, node, node.operator + ",left", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",left", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
                             nodes.push(addNode);
                             nodesNumber++;
@@ -301,7 +312,7 @@ public class CoastGuard {
                     }
                     checkState = node.up();
                     if (checkState != null && !lastOperator.equals("down")) {
-                        Node addNode = new Node(checkState, node, node.operator + ",up", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",up", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
                             nodes.push(addNode);
                             nodesNumber++;
@@ -309,7 +320,7 @@ public class CoastGuard {
                     }
                     checkState = node.down();
                     if (checkState != null && !lastOperator.equals("up")) {
-                        Node addNode = new Node(checkState, node, node.operator + ",down", node.depth + 1, 0);
+                        Node addNode = new Node(checkState, node, node.operators + ",down", node.depth + 1, 0);
                         if (!isDuplicate(addNode.state)) {
                             nodes.push(addNode);
                             nodesNumber++;
@@ -334,18 +345,18 @@ public class CoastGuard {
         while(!nodes.isEmpty()){
             Node node = nodes.remove();
             if(node.state.isGoalState()){//Goal test
-                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                String s=node.operators +";"+node.state.dead+";"+node.state.blackboxesPickedUp +";"+nodesNumber;
                 s=s.substring(1);
                 existingStates = new HashSet<String>();
                 return s;
             }
             else{
-                String[] LastNode=node.operator.split(",",-1);
+                String[] LastNode=node.operators.split(",",-1);
                 String lastOperator=LastNode[LastNode.length-1];
 
                 State checkState=node.pickUp();
                 if(checkState!=null ){
-                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",pickup",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -354,7 +365,7 @@ public class CoastGuard {
                 }
                 checkState=node.drop();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",drop",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -363,7 +374,7 @@ public class CoastGuard {
                 }
                 checkState=node.retrieve();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",retrieve",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -372,7 +383,7 @@ public class CoastGuard {
                 }
                 checkState=node.right();
                 if(checkState!=null && !lastOperator.equals("left")){
-                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",right",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -381,7 +392,7 @@ public class CoastGuard {
                 }
                 checkState=node.left();
                 if(checkState!=null&& !lastOperator.equals("right")){
-                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",left",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -390,7 +401,7 @@ public class CoastGuard {
                 }
                 checkState=node.up();
                 if(checkState!=null&& !lastOperator.equals("down")){
-                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",up",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -399,7 +410,7 @@ public class CoastGuard {
                 }
                 checkState=node.down();
                 if(checkState!=null&& !lastOperator.equals("up")){
-                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,0);
+                    Node addNode=new Node(checkState,node,node.operators +",down",node.depth+1,0);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -425,18 +436,18 @@ public class CoastGuard {
         while(!nodes.isEmpty()){
             Node node = nodes.remove();
             if(node.state.isGoalState()){//Goal test
-                String s=node.operator+";"+node.state.dead+";"+node.state.pickedUp+";"+nodesNumber;
+                String s=node.operators +";"+node.state.dead+";"+node.state.blackboxesPickedUp +";"+nodesNumber;
                 s=s.substring(1);
                 existingStates = new HashSet<String>();
                 return s;
             }
             else{
-                String[] LastNode=node.operator.split(",",-1);
+                String[] LastNode=node.operators.split(",",-1);
                 String lastOperator=LastNode[LastNode.length-1];
 
                 State checkState=node.pickUp();
                 if(checkState!=null ){
-                    Node addNode=new Node(checkState,node,node.operator+",pickup",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",pickup",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -445,7 +456,7 @@ public class CoastGuard {
                 }
                 checkState=node.drop();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",drop",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",drop",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -455,7 +466,7 @@ public class CoastGuard {
                 checkState=node.retrieve();
                 int BoxesLeft=0;
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operator+",retrieve",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",retrieve",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -464,7 +475,7 @@ public class CoastGuard {
                 }
                 checkState=node.right();
                 if(checkState!=null && !lastOperator.equals("left")){
-                    Node addNode=new Node(checkState,node,node.operator+",right",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",right",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -473,7 +484,7 @@ public class CoastGuard {
                 }
                 checkState=node.left();
                 if(checkState!=null&& !lastOperator.equals("right")){
-                    Node addNode=new Node(checkState,node,node.operator+",left",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",left",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -482,7 +493,7 @@ public class CoastGuard {
                 }
                 checkState=node.up();
                 if(checkState!=null&& !lastOperator.equals("down")){
-                    Node addNode=new Node(checkState,node,node.operator+",up",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",up",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -491,7 +502,7 @@ public class CoastGuard {
                 }
                 checkState=node.down();
                 if(checkState!=null&& !lastOperator.equals("up")){
-                    Node addNode=new Node(checkState,node,node.operator+",down",node.depth+1,checkState.dead);
+                    Node addNode=new Node(checkState,node,node.operators +",down",node.depth+1,checkState.dead);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -571,6 +582,7 @@ public class CoastGuard {
     }
 
     public static String solve(String grid, String strategy, boolean visual){
+        // switching over different search algorithms using the symbols
         String s="No Solution";
         switch (strategy) {
             case "BF":
@@ -616,6 +628,7 @@ public class CoastGuard {
                 }
                 return s;
         }
+        //reset states hashset
         existingStates = new HashSet<String>();
         return s;
     }
@@ -638,7 +651,6 @@ public class CoastGuard {
         //"5,6;50;0,1;0,4,3,3;1,1,90;"
         //System.out.println(s1);
         System.out.println(s2);
-
 
 
 
