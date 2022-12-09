@@ -28,20 +28,20 @@ public class Node {
         if (heuristicNumber == 1) {
             int passengersOnShips = 0;
             int blackBoxesNotRetrieved=0;
-            for (int i = 0; i < this.state.ships.length; i++) {
+            for (int i = 0; i < this.state.ships.length; i++) {//find total number of passengers on the ship
                 passengersOnShips += this.state.ships[i][2];
             }
 
-            for (int i = 0; i < this.state.blackbox.length; i++) {
+            for (int i = 0; i < this.state.blackbox.length; i++) {// find total number of black boxes not retrieved values is 21 as we add an 1 redundant 1 at the start their health
                 if(this.state.blackbox[i][2]<21){
                     blackBoxesNotRetrieved++;
                 }
             }
 
-            this.heuristic_cost = (int) Math.ceil((passengersOnShips / this.state.coastGuardCapacity))+blackBoxesNotRetrieved ;
+            this.heuristic_cost = (int) Math.ceil((passengersOnShips / this.state.coastGuardCapacity))+blackBoxesNotRetrieved ;// cost is the number of passengers divided by the guard ship capacity + the number of unpicked boxes
 
 
-        } else if (heuristicNumber == 2) {
+        } else if (heuristicNumber == 2) {// this is similar to heuristic 1 with an addition of the passengers on the coast guard shi[
             int passengersOnShips = 0;
             int blackBoxesNotRetrieved = 0;
             for (int i = 0; i < this.state.ships.length; i++) {
@@ -53,7 +53,7 @@ public class Node {
                 }
             }
             byte dropOnCoastGuard = 0;
-            if (this.state.coastGuardCapacity == this.state.passengersOnCoastGuard) {
+            if (this.state.coastGuardCapacity == this.state.passengersOnCoastGuard) {// we check if the coast guard ship is at maximum capacity if so that means we have an additional step of dropping passengers on ship
                 dropOnCoastGuard = 1;
             }
             if (passengersOnShips==0) {
@@ -221,7 +221,7 @@ public class Node {
     }
 
 
-    public static State death(State newState){
+    public static State death(State newState){// this function kills off the passengers every time step and adds to the damage of the blackboxes
         for (int i = 0; i <newState.ships.length ; i++) {
             if(newState.ships[i][2]>0){
                 newState.ships[i][2]--;

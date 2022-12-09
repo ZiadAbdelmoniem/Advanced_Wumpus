@@ -92,36 +92,36 @@ public class State {
 
     }
 
-    public static void print2D(String mat[][]) {
+    public static void print2D(String mat[][]) {// prints an 2D array in a more viewable way
         for (String[] row : mat)
             System.out.println(Arrays.toString(row));
     }
 
-    public void print2d(){
+    public void print2d(){//prints the current state for visualizing a node
         String [][]curr_Grid=new String[this.n][this.m];
 
 
-        for (int i = 0; i < stations.length; i++) {
+        for (int i = 0; i < stations.length; i++) {//position of stations
             int x=stations[i][0];
             int y=stations[i][1];
             curr_Grid[x][y]="Station";
         }
 
-        for (int i = 0; i < ships.length; i++) {
+        for (int i = 0; i < ships.length; i++) {//position of ships
             int x=ships[i][0];
             int y=ships[i][1];
             int p=ships[i][2];
-            if(p>0) {
+            if(p>0) {// if there are passengers put ship in array
                 curr_Grid[x][y] = "Ship/" + p;
             }
-            else{
+            else{//if all dead passengers put blackbox
                 for (int[] box:this.blackbox
                      ) {
                     if(box[0]==ships[i][0] && box[1]==ships[i][1] ){
-                        if(box[2]>20){
+                        if(box[2]>20){//un-retrievable black box
                             curr_Grid[x][y] = "BlackBox Gone" ;
                         }
-                        else{
+                        else{//boxes that can be retrieved
                             int ShowHealth=box[2]-1;
                             curr_Grid[x][y] = "BlackBox/" + ShowHealth ;
                         }
@@ -130,16 +130,16 @@ public class State {
                 }
             }
         }
-        if(curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]==null){
+        if(curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]==null){//if guard ship is alone in square print guard ship with capacity
             curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]="CoastGuard/"+this.passengersOnCoastGuard +"/"+this.blackboxesPickedUp;
 
         }
-        else{
+        else{//if guard ship is in a square with a station or ship print them with coast guard ship
             curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]= curr_Grid[this.currentCoastGuardX][this.currentCoastGuardY]+" "+"CoastGuard/"+this.passengersOnCoastGuard +"/"+this.blackboxesPickedUp;
 
         }
 
-        System.out.println("Dead: "+this.dead);
+        System.out.println("Dead: "+this.dead);//number of dead people print
         print2D(curr_Grid);
 
     }
