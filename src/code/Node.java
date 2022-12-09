@@ -23,44 +23,46 @@ public class Node {
     function for calculating and setting heuristic cost of the node where heuristicNumber is the number of
     heuristic function chosen.
      */
+
     public void calculateHeuristic(int heuristicNumber) {
         if (heuristicNumber == 1) {
-            int passengersOnShips = 0;
-            for (int i = 0; i < this.state.ships.length; i++) {
-                passengersOnShips += this.state.ships[i][2];
-            }
-
-            int passengersOnGuardShip = 0;
-            if (this.state.passengersOnCoastGuard > 1) {
-                passengersOnGuardShip = 1;
-            }
-
-            this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.coastGuardCapacity)) + passengersOnGuardShip;
-        } else if (heuristicNumber == 2) {
             int passengersOnShips = 0;
             int blackBoxesNotRetrieved=0;
             for (int i = 0; i < this.state.ships.length; i++) {
                 passengersOnShips += this.state.ships[i][2];
             }
 
-            int passengersOnGuardShip = 0;
-            if (this.state.passengersOnCoastGuard > 1) {
-                passengersOnGuardShip = 1;
-            }
             for (int i = 0; i < this.state.blackbox.length; i++) {
                 if(this.state.blackbox[i][2]<21){
                     blackBoxesNotRetrieved++;
                 }
             }
-            if(passengersOnShips==0){
-                this.heuristic_cost =blackBoxesNotRetrieved+passengersOnGuardShip;
 
-            }
-            else{
-                this.heuristic_cost = (int) Math.ceil(2 * (passengersOnShips / this.state.coastGuardCapacity)) + passengersOnGuardShip;
+            this.heuristic_cost = (int) Math.ceil((passengersOnShips / this.state.coastGuardCapacity))+blackBoxesNotRetrieved ;
 
+
+        } else if (heuristicNumber == 2) {
+            int passengersOnShips = 0;
+            int blackBoxesNotRetrieved = 0;
+            for (int i = 0; i < this.state.ships.length; i++) {
+                passengersOnShips += this.state.ships[i][2];
             }
-             }
+            for (int i = 0; i < this.state.blackbox.length; i++) {
+                if (this.state.blackbox[i][2] < 21) {
+                    blackBoxesNotRetrieved++;
+                }
+            }
+            byte dropOnCoastGuard = 0;
+            if (this.state.coastGuardCapacity == this.state.passengersOnCoastGuard) {
+                dropOnCoastGuard = 1;
+            }
+            if (passengersOnShips==0) {
+                this.heuristic_cost = blackBoxesNotRetrieved ;
+
+            } else {
+                this.heuristic_cost = (int) Math.ceil((passengersOnShips / this.state.coastGuardCapacity)) + blackBoxesNotRetrieved +dropOnCoastGuard;
+            }
+        }
     }
 
     /*

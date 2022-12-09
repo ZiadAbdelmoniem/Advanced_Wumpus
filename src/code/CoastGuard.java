@@ -447,7 +447,13 @@ public class CoastGuard {
 
                 State checkState=node.pickUp();
                 if(checkState!=null ){
-                    Node addNode=new Node(checkState,node,node.operators +",pickup",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",pickup",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -456,7 +462,13 @@ public class CoastGuard {
                 }
                 checkState=node.drop();
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operators +",drop",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",drop",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -464,9 +476,15 @@ public class CoastGuard {
                     }
                 }
                 checkState=node.retrieve();
-                int BoxesLeft=0;
+
                 if(checkState!=null){
-                    Node addNode=new Node(checkState,node,node.operators +",retrieve",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",retrieve",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -475,7 +493,13 @@ public class CoastGuard {
                 }
                 checkState=node.right();
                 if(checkState!=null && !lastOperator.equals("left")){
-                    Node addNode=new Node(checkState,node,node.operators +",right",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",right",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -484,7 +508,13 @@ public class CoastGuard {
                 }
                 checkState=node.left();
                 if(checkState!=null&& !lastOperator.equals("right")){
-                    Node addNode=new Node(checkState,node,node.operators +",left",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",left",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -493,7 +523,13 @@ public class CoastGuard {
                 }
                 checkState=node.up();
                 if(checkState!=null&& !lastOperator.equals("down")){
-                    Node addNode=new Node(checkState,node,node.operators +",up",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",up",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -502,7 +538,13 @@ public class CoastGuard {
                 }
                 checkState=node.down();
                 if(checkState!=null&& !lastOperator.equals("up")){
-                    Node addNode=new Node(checkState,node,node.operators +",down",node.depth+1,checkState.dead);
+                    int blackBoxesNotRetrieved=0;
+                    for (int i = 0; i < checkState.blackbox.length; i++) {
+                        if(checkState.blackbox[i][2]<21){
+                            blackBoxesNotRetrieved++;
+                        }
+                    }
+                    Node addNode=new Node(checkState,node,node.operators +",down",node.depth+1,checkState.dead*255+blackBoxesNotRetrieved);
                     if(!isDuplicate(addNode.state)) {
                         addNode.calculateHeuristic(heuristicNumber);
                         nodes.add(addNode);
@@ -644,13 +686,59 @@ public class CoastGuard {
 
     public static void main (String []args){
 
+        String grid0 = "5,6;50;0,1;0,4,3,3;1,1,90;";
+        String grid1 = "6,6;52;2,0;2,4,4,0,5,4;2,1,19,4,2,6,5,0,8;";
+        String grid2 = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
+        String grid3 = "8,5;60;4,6;2,7;3,4,37,3,5,93,4,0,40;";
+        String grid4 = "5,7;63;4,2;6,2,6,3;0,0,17,0,2,73,3,0,30;";
+        String grid5 = "5,5;69;3,3;0,0,0,1,1,0;0,3,78,1,2,2,1,3,14,4,4,9;";
+        String grid6 = "7,5;86;0,0;1,3,1,5,4,2;1,1,42,2,5,99,3,5,89;";
+        String grid7= "6,7;82;1,4;2,3;1,1,58,3,0,58,4,2,72;";
+        String grid8 = "6,6;74;1,1;0,3,1,0,2,0,2,4,4,0,4,2,5,0;0,0,78,3,3,5,4,3,40;";
+        String grid9 = "7,5;100;3,4;2,6,3,5;0,0,4,0,1,8,1,4,77,1,5,1,3,2,94,4,3,46;";
 
-        String grid= "5,6;50;0,1;0,4,3,3;1,1,90;";
-       // String s1=solve(grid,"AS2",true);
-        String s2=solve(grid,"AS2",true);
-        //"5,6;50;0,1;0,4,3,3;1,1,90;"
-        //System.out.println(s1);
+        String s1=solve(grid0,"AS1",false);
+        String s2=solve(grid0,"AS2",false);
+        String s3=solve(grid1,"AS1",false);
+        String s4=solve(grid1,"AS2",false);
+        String s5=solve(grid2,"AS1",false);
+        String s6=solve(grid2,"AS2",false);
+        String s7=solve(grid3,"AS1",false);
+        String s8=solve(grid3,"AS2",false);
+        String s9=solve(grid4,"AS1",false);
+        String s10=solve(grid4,"AS2",false);
+        String s11=solve(grid5,"AS1",false);
+        String s12=solve(grid5,"AS2",false);
+        String s13=solve(grid6,"AS1",false);
+        String s14=solve(grid6,"AS2",false);
+        String s15=solve(grid7,"AS1",false);
+        String s16=solve(grid7,"AS2",false);
+        String s17=solve(grid8,"AS1",false);
+        String s18=solve(grid8,"AS2",false);
+        String s19=solve(grid9,"AS1",false);
+        String s20=solve(grid9,"AS2",false);
+
+        System.out.println(s1);
         System.out.println(s2);
+        System.out.println(s3);
+        System.out.println(s4);
+        System.out.println(s5);
+        System.out.println(s6);
+        System.out.println(s7);
+        System.out.println(s8);
+        System.out.println(s9);
+        System.out.println(s10);
+        System.out.println(s11);
+        System.out.println(s12);
+        System.out.println(s13);
+        System.out.println(s14);
+        System.out.println(s15);
+        System.out.println(s16);
+        System.out.println(s17);
+        System.out.println(s18);
+        System.out.println(s19);
+        System.out.println(s20);
+
 
 
 
